@@ -1,65 +1,71 @@
-import React, { use, useEffect } from 'react'
-import { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { faStar } from '@fortawesome/free-solid-svg-icons'
-import Restaurentscard from './Restaurentscard'
+import React, { useState, useEffect, useContext } from "react";
+import Restaurentscard from "./Restaurentscard";
+import { Coordinates } from "../context/contextAPI";
 
 function OnlinefoodDelivery() {
-    const [data,setdata] = useState([])
-   
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { coordinates: { lat, lng } } = useContext(Coordinates);
 
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api-d/restaurants/list/v5?lat=${lat}&lng=${lng}`);
+      const result = await res.json();
 
-            async function fetchdata(){
-                const data = await fetch("/api-d/restaurants/list/v5?lat=12.9147078&lng=77.61344")
-                const result = await data.json()
-                console.log(result?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants )
-                setdata(result?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants)
-                
-            }
-        
-            useEffect(() => {
-                fetchdata()
-            }, [])
+      // ✅ Safely find the correct section that contains restaurants
+      const restaurantSection = result?.data?.cards?.find(
+        (card) => card?.card?.card?.gridElements?.infoWithStyle?.restaurants
+      );
 
-   
+      const restaurants =
+        restaurantSection?.card?.card?.gridElements?.infoWithStyle?.restaurants || [];
+
+      setData(restaurants);
+    } catch (error) {
+      console.error("Error fetching restaurant data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // 🔁 Refetch every time lat/lng changes
+  useEffect(() => {
+    fetchData();
+  }, [lat, lng]);
 
   return (
-        <div className='w-full mt-16 '>
-                {/* < className='w-[72%] mx-auto  mt-4 overflow-hidden ' /down in the div this classname was added /> */}
-                <div >
-                     <div className='  text-xl font-bold mt-4 flex justify-between ' >
-        
-                        <h1>Restaurants with online food delivery in Bangalore</h1>
+    <div className="w-full mt-16">
+      <div>
+        <div className="text-xl font-bold mt-4 flex justify-between">
+          <h1>Restaurants with online food delivery near you</h1>
+        </div>
 
-                    </div>
-                    
-                    
-                     {/* <div className={' grid grid-cols-5 mt-4 gap-2  ' }> */}
-                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4 gap-6 place-items-start">
+        {/* Loader */}
+        {loading && (
+          <div className="text-center text-orange-500 font-semibold mt-10">
+            Loading restaurants...
+          </div>
+        )}
 
-                        
-                     {
-                            data.map((restro, cta )=>(
-                                
-                              <Restaurentscard key={restro.info.id} restro = {restro} link={cta?.link}/>
-                              
-                            ))
-                           
-                        }
-                                
-                    </div> 
-                    
-                    
-                    <hr className='border'/>
-                 
-                </div>
-             
-            </div>
-       
-  )
+        {/* No restaurants found */}
+        {!loading && data.length === 0 && (
+          <div className="text-center text-gray-500 mt-10">
+            No restaurants found for this area.
+          </div>
+        )}
+
+        {/* Render restaurant cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mt-4 gap-6 place-items-start">
+          {data.map((restro, idx) => (
+            <Restaurentscard key={restro?.info?.id || idx} restro={restro} />
+          ))}
+        </div>
+
+        <hr className="border mt-6" />
+      </div>
+    </div>
+  );
 }
 
-export default OnlinefoodDelivery
-
+export default OnlinefoodDelivery;

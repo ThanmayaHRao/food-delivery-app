@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useContext, useEffect,useState } from "react";
 import { data, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,6 +7,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
+import { Coordinates } from "../context/contextAPI";
 
 
    function ExpandableText({ text, maxChars = 120 }) {
@@ -109,6 +110,7 @@ function RestaurantMenu() {
   console.log(toppicsvalue)
   const [currindex , setcurrindex] = useState(0);
   const [toppics , settoppics] = useState({});
+  const {coordinates:{lat,lng}} = useContext(Coordinates)
 
   // console.log(restrodata);
      
@@ -148,7 +150,7 @@ function RestaurantMenu() {
   async function fetchapi() {
     
       
-      let data = await fetch( `/api-m/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9148979&lng=77.6126707&restaurantId=${restid}&submitAction=ENTER`);
+      let data = await fetch( `/api-m/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${restid}&submitAction=ENTER`);
        
       let res = await data.json(); 
       setrestrodata(res?.data?.cards[2]?.card?.card?.info);

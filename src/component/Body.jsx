@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import Onyourhead from './Onyourhead'  
 import Toprestaurent from './Toprestaurent' 
 import OnlinefoodDelivery from './OnlinefoodDelivery'
+import {Coordinates } from '../context/contextAPI'
 
 
 function Body() {
+    const {coordinates:{lat,lng}} = useContext(Coordinates)
   
 
 return (

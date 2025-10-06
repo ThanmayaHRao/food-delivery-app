@@ -3,22 +3,43 @@ import { useState,useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { useContext } from 'react'
+import { Coordinates } from '../context/contextAPI'
 
 function Onyourhead() {
         const [data,setdata] = useState([])
         const [value,setvalue] = useState(0)
+        const {coordinates:{lat,lng}} = useContext(Coordinates)
     
-        async function fetchdata(){
-            const data = await fetch("/api-d/restaurants/list/v5?lat=12.9147078&lng=77.61344")
-            const result = await data.json()
-            console.log(result?.data?.cards[0]?.card?.card?.imageGridCards?.info )
-            setdata(result?.data?.cards[0]?.card?.card?.imageGridCards?.info || []) 
+        // async function fetchdata(){
+        //     const data = await fetch(`/api-d/restaurants/list/v5?lat=${lat}&lng=${lng}`)
+        //     const result = await data.json()
+        //     console.log(result?.data?.cards[0]?.card?.card?.imageGridCards?.info )
+        //     setdata(result?.data?.cards[0]?.card?.card?.imageGridCards?.info || []) 
             
-        }
+        // }
+        async function fetchdata() {
+            try {
+                const res = await fetch(`/api-d/restaurants/list/v5?lat=${lat}&lng=${lng}`);
+                const result = await res.json();
+
+                // ✅ Use .find to safely extract the desired object
+                const imageGridInfo =
+                result?.data?.cards?.find(
+                    (card) => card?.card?.card?.imageGridCards?.info
+                )?.card?.card?.imageGridCards?.info || [];
+
+                console.log(imageGridInfo);
+                setdata(imageGridInfo);
+            } catch (error) {
+                console.error('Error fetching image grid data:', error);
+            }
+            }
+
     
         useEffect(() => {
             fetchdata()
-        }, [])
+        }, [lat, lng])
     
         console.log(value)
     
