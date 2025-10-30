@@ -10,6 +10,7 @@ function Onyourhead() {
         const [data,setdata] = useState([])
         const [value,setvalue] = useState(0)
         const {coordinates:{lat,lng}} = useContext(Coordinates)
+        const [serviceable,setserviceable] = useState({})
     
         // async function fetchdata(){
         //     const data = await fetch(`/api-d/restaurants/list/v5?lat=${lat}&lng=${lng}`)
@@ -24,6 +25,7 @@ function Onyourhead() {
                 const result = await res.json();
 
                 // ✅ Use .find to safely extract the desired object
+                setserviceable(result?.data)
                 const imageGridInfo =
                 result?.data?.cards?.find(
                     (card) => card?.card?.card?.imageGridCards?.info
@@ -40,6 +42,10 @@ function Onyourhead() {
         useEffect(() => {
             fetchdata()
         }, [lat, lng])
+
+        if(data.communication){
+            return <div>oops location unserviceable...!</div>
+        }
     
         console.log(value)
     

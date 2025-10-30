@@ -1,9 +1,12 @@
 import { Link , Outlet } from 'react-router-dom';
 import { faCartShopping, faBagShopping, faPercent, faCircleInfo, faUser, faMagnifyingGlass ,faChevronDown} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRotateLeft} from '@fortawesome/free-solid-svg-icons'
+import { faLocationDot} from '@fortawesome/free-solid-svg-icons'
 import { useContext, useState } from 'react';
 import { Visiblity } from '../context/contextAPI';
 import { Coordinates } from '../context/contextAPI';
+import { faXmark } from '@fortawesome/free-solid-svg-icons'
 
 
 function Head() {
@@ -28,6 +31,7 @@ function Head() {
  }
   async function fetchLatandLng(id){
      if (id == "")return
+     handlevisiblity()
        const res = await fetch(`/api-d/misc/address-recommend?place_id=${id}`)
        const data = await res.json()
       
@@ -48,28 +52,43 @@ function Head() {
     <div className='relative w-full'>
 
       
-      <div className='w-full'>
+      <div className='w-full '>
             <div onClick={handlevisiblity} className={' w-full h-full bg-black/50 z-30   absolute ' + (visible ? "visible": "invisible")}></div>
-            <div className={'bg-white w-1/3 h-full p-5 z-40 absolute transition-all duration-500 ease-in-out '+(visible ? "left-0" : "-left-[100%]")}>
-            <p className='bg-black text-white p-5 w-[10%]' onClick={handlevisiblity}>click</p>
-          <input
-                type="text"
-                className="border p-5 focus:outline-none focus:shadow-lg"
-                onChange={(e)=>searchResultfunctionality(e.target.value)}
-              />
+            <div className={'flex bg-white w-[40%] h-full p-1 z-40 absolute transition-all duration-500 ease-in-out justify-end '+(visible ? "left-0" : "-left-[100%]")}>
+            <div className='flex-col p-5 w-[60%] '>
+                     <div><FontAwesomeIcon icon={faXmark}  onClick={handlevisiblity} /></div> 
+                     <div>
+                        <input
+                        placeholder='Search for area, street name...'
+                        type="text"
+                        className="border p-5 h-12 w-[95%]  mt-6 shadow-md focus:outline-none "
+                        onChange={(e)=>searchResultfunctionality(e.target.value)}
+                      />
+                     </div>
+                    
 
-              <div>
-                <ul>
-                  {
-                    searchresult.map((data, idx) => (
-                      <li key={idx} onClick={()=> fetchLatandLng(data.place_id)} className='border-b p-5 cursor-pointer hover:bg-gray-200'>
-                        
-                        <p>{data.structured_formatting.main_text}</p>
-                        <p className='text-sm opacity-30'>{data.structured_formatting.secondary_text}</p>
-                        </li>
-                    ))}
-                </ul>
-              </div>
+                      <div className='mt-8'>
+                        <ul>
+                          {
+                            searchresult.map((data, idx) => (
+                              <li key={idx} onClick={()=> fetchLatandLng(data.place_id)} className='flex-col w-[95%] h-13 border border-b p-5  cursor-pointer hover:bg-gray-200'>
+                                <div className='flex gap-3'> 
+                                   <div><FontAwesomeIcon icon={faLocationDot} /></div>
+                                   <div >
+                                    <p>{data.structured_formatting.main_text}</p>
+                                    <p className='text-sm opacity-30'>{data.structured_formatting.secondary_text}</p>
+                                   </div>
+                                </div>
+                                  
+                                   
+                                
+                               
+                                </li>
+                            ))}
+                        </ul>
+                      </div>
+            </div>
+           
 
 
             </div>
