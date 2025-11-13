@@ -2,14 +2,16 @@ import Head from './component/Head.jsx';
 import Body from './component/Body.jsx';
 import { Routes, Route } from 'react-router-dom';
 import RestaurantMenu from './component/RestaurantMenu.jsx';
-import { Visiblity } from './context/contextAPI.js';
+import { Cartcontext, Visiblity } from './context/contextAPI.js';
 import { useState } from 'react';
 import { Coordinates } from './context/contextAPI.js';
 
 function App() {
   const [visible,setvisible] = useState(false)
   const [coordinates,setcoordinates] = useState({lat :12.9147078,lng :77.61344})
+  const [ cartdata, setcartdata ] = useState([{}])
   return (
+    <Cartcontext.Provider value={{cartdata,setcartdata}}>
     <Coordinates.Provider value={{coordinates,setcoordinates}}> 
       <Visiblity.Provider value={{visible,setvisible}}>
         <div className={visible ? "overflow-hidden max-h-screen": ""}>
@@ -23,7 +25,7 @@ function App() {
       </div>
       </Visiblity.Provider>
    </Coordinates.Provider>
-   
+  </Cartcontext.Provider> 
   );
 }
 

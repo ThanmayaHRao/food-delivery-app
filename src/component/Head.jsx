@@ -12,6 +12,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons'
 function Head() {
 
   const {visible,setvisible} = useContext(Visiblity)
+  // const {cartdata,setcartdata} = useContext(Cartcontext)
 
   const[searchresult,setsearchresult] = useState([])
   const {setcoordinates} = useContext(Coordinates)
